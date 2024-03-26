@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 from setuptools import setup, find_packages, Extension
+from security import safe_command
 
 if sys.version_info[:2] == (3, 6):
     clinic_file = "tools/py36_clinic.py"
@@ -16,7 +17,7 @@ tool_env = os.environ.copy()
 tool_env["PYTHONPATH"] = os.path.join(repo_root, "tools") \
     + ":" + tool_env.get("PYTHONPATH", "")
 shmem_source = "winshmem" if sys.platform == "win32" else "posixshmem"
-subprocess.run([sys.executable, clinic_file, f"shared_memory/{shmem_source}.c"],
+safe_command.run(subprocess.run, [sys.executable, clinic_file, f"shared_memory/{shmem_source}.c"],
                 env=tool_env)
 
 posix_shm_mod = Extension(

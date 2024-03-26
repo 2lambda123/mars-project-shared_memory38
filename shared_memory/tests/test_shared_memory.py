@@ -10,6 +10,7 @@ import sys
 import unittest
 import warnings
 from shared_memory.shared_memory import _USE_POSIX
+from security import safe_command
 
 
 def strip_python_stderr(stderr):
@@ -188,7 +189,7 @@ class TestSharedMemory(unittest.TestCase):
             sl = smm.ShareableList(range(10))
             smm.shutdown()
         '''
-        p = subprocess.Popen([sys.executable, '-E', '-c', cmd],
+        p = safe_command.run(subprocess.Popen, [sys.executable, '-E', '-c', cmd],
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         rc = p.returncode
@@ -361,7 +362,7 @@ class TestSharedMemory(unittest.TestCase):
             sys.stdout.flush()
             time.sleep(100)
         '''
-        with subprocess.Popen([sys.executable, '-E', '-c', cmd],
+        with safe_command.run(subprocess.Popen, [sys.executable, '-E', '-c', cmd],
                               stdout=subprocess.PIPE,
                               stderr=subprocess.PIPE) as p:
             name = p.stdout.readline().strip().decode()
